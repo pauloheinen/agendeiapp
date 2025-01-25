@@ -1,0 +1,21 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "never"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.cursorSmoothCaretAnimation": "on",
+  "editor.cursorSurroundingLines": 10,
+  "editor.cursorStyle": "line",
+  "editor.cursorBlinking": "phase",
+  "editor.smoothScrolling": true,
+  "editor.mouseWheelScrollSensitivity": 1,
+  "editor.scrollBeyondLastLine": false,
+  "workbench.list.smoothScrolling": true
+}
