@@ -2,9 +2,8 @@ export interface User extends Record<string, unknown> {
   id: string;
   email: string;
   name: string;
-  password: string;
-  phone: string;
-  createdAt: Date;
-  updatedAt: Date;
-  type: "provider" | "customer";
+  type: 0 | 1; // 0: common, 1: admin
+  ref_provider: number;
+  created_at: Date;
+  updated_at: Date;
 }

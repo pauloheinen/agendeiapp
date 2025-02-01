@@ -2,19 +2,19 @@ import { useState } from "react";
 import { User } from "@/models/user";
 
 interface UseAuth {
-  user: User | null;
   loading: boolean;
   error: string | null;
-  login: (email: string, password: string, userType: string) => Promise<void>;
+  login: (email: string, password: string, userType: string) => Promise<User>;
 }
 
 export function useAuth(): UseAuth {
-  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const login = async (email: string, password: string, userType: string) => {
     setLoading(true);
+    setError(null);
+
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
@@ -24,15 +24,18 @@ export function useAuth(): UseAuth {
 
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok) {
+        throw new Error(data.error);
+      }
 
-      setUser(data.user);
+      return data.user;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error");
+      setError(err instanceof Error ? err.message : "Erro desconhecido");
+      throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  return { user, loading, error, login };
+  return { loading, error, login };
 }

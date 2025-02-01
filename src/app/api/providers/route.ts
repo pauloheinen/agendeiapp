@@ -1,15 +1,18 @@
 import { NextResponse } from "next/server";
-import { User } from "@/models/user";
 import { db } from "@/lib/db";
+import { Provider } from "@/models/provider";
 
-export async function POST(request: Request) {
-  const { email, password, userType } = await request.json();
-
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const categoryId = Number(searchParams.get("categoryId"));
+
     const { data, error } = await db
-      .from<User>("users")
+      .from<Provider>("providers")
       .select((query) =>
-        query.eq("email", email).eq("password", password).eq("type", userType)
+        query
+          .eq("category_id", categoryId)
+          .order("rating", { ascending: false })
       );
 
     if (error) {
@@ -24,7 +27,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const response = NextResponse.json({ user: data[0] }, { status: 200 });
+    const response = NextResponse.json({ providers: data }, { status: 200 });
     return response;
   } catch (err) {
     const errorMessage =

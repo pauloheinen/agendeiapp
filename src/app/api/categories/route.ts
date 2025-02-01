@@ -1,16 +1,12 @@
 import { NextResponse } from "next/server";
-import { User } from "@/models/user";
 import { db } from "@/lib/db";
+import { Category } from "@/models/category";
 
-export async function POST(request: Request) {
-  const { email, password, userType } = await request.json();
-
+export async function GET() {
   try {
     const { data, error } = await db
-      .from<User>("users")
-      .select((query) =>
-        query.eq("email", email).eq("password", password).eq("type", userType)
-      );
+      .from<Category>("categories")
+      .select((query) => query);
 
     if (error) {
       console.log("Route: Returning error response:", error);
@@ -24,7 +20,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const response = NextResponse.json({ user: data[0] }, { status: 200 });
+    const response = NextResponse.json({ categories: data }, { status: 200 });
     return response;
   } catch (err) {
     const errorMessage =

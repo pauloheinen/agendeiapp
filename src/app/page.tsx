@@ -1,8 +1,11 @@
 "use client";
 import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
 export default function Home() {
+  const router = useRouter();
+
   const { login, loading, error } = useAuth();
   const [userType, setUserType] = useState<"provider" | "customer">();
   const [submitting, setSubmitting] = useState(false);
@@ -10,21 +13,27 @@ export default function Home() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     if (!userType) {
       setShowTypeError(true);
-
       return;
     }
 
     setSubmitting(true);
-    const form = e.currentTarget;
-    const email = (form.elements.namedItem("email") as HTMLInputElement).value;
-    const password = (form.elements.namedItem("password") as HTMLInputElement)
-      .value;
 
     try {
-      await login(email, password, userType);
+      const form = e.currentTarget;
+      const email = (form.elements.namedItem("email") as HTMLInputElement)
+        .value;
+      const password = (form.elements.namedItem("password") as HTMLInputElement)
+        .value;
+
+      const userData = await login(email, password, userType);
+
+      if (userData) {
+        router.push(`/dashboard/${userType}`);
+      }
+    } catch (err) {
+      console.error("Login failed:", err);
     } finally {
       setSubmitting(false);
     }
