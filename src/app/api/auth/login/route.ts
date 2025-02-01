@@ -4,13 +4,11 @@ import { db } from "@/lib/db";
 
 export async function POST(request: Request) {
   try {
-    const { email, password, userType } = await request.json();
+    const { email, password } = await request.json();
 
     const { data, error } = await db
       .from<User>("users")
-      .select((query) =>
-        query.eq("email", email).eq("password", password).eq("type", userType)
-      );
+      .select((query) => query.eq("email", email).eq("password", password));
 
     if (error) {
       console.log("Route: Returning error response:", error);
