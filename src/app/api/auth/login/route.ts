@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import { User } from "@/models/user";
 import { db } from "@/lib/db";
 
-export const runtime = "edge";
-
 export async function POST(request: Request) {
   try {
     const { email, password, userType } = await request.json();
@@ -37,5 +35,3 @@ export async function POST(request: Request) {
     );
   }
 }
-
-export type { User };
