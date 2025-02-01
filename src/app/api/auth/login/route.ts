@@ -2,10 +2,12 @@ import { NextResponse } from "next/server";
 import { User } from "@/models/user";
 import { db } from "@/lib/db";
 
-export async function POST(request: Request) {
-  const { email, password, userType } = await request.json();
+export const runtime = "edge";
 
+export async function POST(request: Request) {
   try {
+    const { email, password, userType } = await request.json();
+
     const { data, error } = await db
       .from<User>("users")
       .select((query) =>
@@ -35,3 +37,5 @@ export async function POST(request: Request) {
     );
   }
 }
+
+export type { User };
