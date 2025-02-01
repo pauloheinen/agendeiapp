@@ -1,17 +1,27 @@
 "use client";
-import { useSearchParams } from "next/navigation";
-import { Calendar } from "@/components/calendar";
 
-export default function Agenda() {
-  const searchParams = useSearchParams();
-  const providerId = searchParams.get("providerId");
+import { Calendar } from "@/components/calendar";
+import { useProvider } from "@/contexts/ProviderContext";
+
+export default function CalendarPage() {
+  const { selectedProvider } = useProvider();
+
+  if (!selectedProvider) {
+    return <div>Nenhum prestador selecionado</div>;
+  }
 
   return (
-    <div className="page-container">
+    <main className="page-container">
       <div className="card w-full max-w-4xl">
-        <h1 className="card-title">Selecione uma Data</h1>
-        <Calendar providerId={providerId} />
+        <div className="mb-8">
+          <h1 className="card-title mb-2">Agendar Horário</h1>
+          <p className="text-gray-400">
+            Agendando com:{" "}
+            <span className="text-white">{selectedProvider.name}</span>
+          </p>
+        </div>
+        <Calendar provider={selectedProvider} />
       </div>
-    </div>
+    </main>
   );
 }

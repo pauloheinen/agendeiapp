@@ -3,17 +3,18 @@ import { Category } from "@/models/category";
 import { Provider } from "@/models/provider";
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useProvider } from "@/contexts/ProviderContext";
 
 export default function CategoriesList() {
+  const router = useRouter();
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [providers, setProviders] = useState<Provider[]>([]);
-  const router = useRouter();
 
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [selectedProvider, setSelectedProvider] = useState<Provider | null>(
-    null
-  );
+
+  const { setSelectedProvider } = useProvider();
 
   async function fetchCategories() {
     try {
@@ -45,7 +46,8 @@ export default function CategoriesList() {
   }, [activeCategory]);
 
   const handleProviderClick = (provider: Provider) => {
-    router.push(`/dashboard/customer/calendar?providerId=${provider.id}`);
+    setSelectedProvider(provider);
+    router.push(`/dashboard/customer/calendar`);
   };
 
   useEffect(() => {

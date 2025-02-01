@@ -10,14 +10,16 @@ import {
   isToday,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { Provider } from "@/models/provider";
 
 interface CalendarProps {
-  providerId: string | null;
+  provider: Provider | null;
 }
 
-export function Calendar({ providerId }: CalendarProps) {
+export function Calendar({ provider: data }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
@@ -58,7 +60,7 @@ export function Calendar({ providerId }: CalendarProps) {
           </div>
         ))}
 
-        {monthDays.map((day, _) => (
+        {monthDays.map((day) => (
           <button
             key={day.toString()}
             onClick={() => setSelectedDate(day)}
@@ -86,23 +88,50 @@ export function Calendar({ providerId }: CalendarProps) {
       </div>
 
       {selectedDate && (
-        <div className="mt-6">
-          <h3 className="text-lg font-medium mb-4">
+        <div className="mt-6 space-y-6">
+          <h3 className="text-xl font-medium text-white mb-4">
             Horários disponíveis para{" "}
             {format(selectedDate, "dd 'de' MMMM", { locale: ptBR })}
           </h3>
-          <div className="grid grid-cols-4 gap-2">
+
+          <div className="grid grid-cols-4 gap-3">
             {["09:00", "10:00", "11:00", "14:00", "15:00", "16:00"].map(
               (time) => (
                 <button
                   key={time}
-                  className="p-2 text-sm bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+                  onClick={() => setSelectedTime(time)}
+                  className={`
+                    py-3 px-4
+                    text-base font-medium
+                    rounded-lg
+                    transition-all duration-200
+                    ${
+                      selectedTime === time
+                        ? "bg-blue-500 text-white ring-2 ring-blue-400 ring-offset-2 ring-offset-gray-800"
+                        : "bg-gray-700 text-gray-200 hover:bg-gray-600"
+                    }
+                  `}
                 >
                   {time}
                 </button>
               )
             )}
           </div>
+
+          {selectedTime && (
+            <div className="mt-8 p-4 bg-gray-700/50 rounded-lg">
+              <p className="text-gray-200 text-base">
+                Você está agendando para: {data?.name}
+                <span className="block mt-2 text-lg font-medium text-white">
+                  {format(selectedDate, "dd 'de' MMMM", { locale: ptBR })} às{" "}
+                  {selectedTime}
+                </span>
+              </p>
+              <button className="mt-4 w-full py-3 px-4 bg-green-600 text-white font-medium rounded-lg hover:bg-green-600 transition-colors">
+                Confirmar Agendamento
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
