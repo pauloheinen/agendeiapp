@@ -1,4 +1,4 @@
-export interface Provider {
+export interface Provider extends Record<string, unknown> {
   id: number;
   name: string;
   description?: string;
