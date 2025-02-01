@@ -1,7 +1,7 @@
 "use client";
 import { Category } from "@/models/category";
 import { Provider } from "@/models/provider";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 export default function CategoriesList() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -9,16 +9,6 @@ export default function CategoriesList() {
 
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
-    if (activeCategory) {
-      fetchProviders();
-    }
-  }, [activeCategory]);
 
   async function fetchCategories() {
     try {
@@ -35,7 +25,7 @@ export default function CategoriesList() {
     }
   }
 
-  async function fetchProviders() {
+  const fetchProviders = useCallback(async () => {
     if (!activeCategory) return;
 
     try {
@@ -47,7 +37,17 @@ export default function CategoriesList() {
     } catch (err) {
       console.error("Failed to fetch providers:", err);
     }
-  }
+  }, [activeCategory]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    if (activeCategory) {
+      fetchProviders();
+    }
+  }, [activeCategory, fetchProviders]);
 
   if (loading) {
     return <div className="text-center">Carregando categorias...</div>;
