@@ -2,13 +2,18 @@
 import { Category } from "@/models/category";
 import { Provider } from "@/models/provider";
 import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 
 export default function CategoriesList() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [providers, setProviders] = useState<Provider[]>([]);
+  const router = useRouter();
 
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [selectedProvider, setSelectedProvider] = useState<Provider | null>(
+    null
+  );
 
   async function fetchCategories() {
     try {
@@ -38,6 +43,10 @@ export default function CategoriesList() {
       console.error("Failed to fetch providers:", err);
     }
   }, [activeCategory]);
+
+  const handleProviderClick = (provider: Provider) => {
+    router.push(`/dashboard/customer/calendar?providerId=${provider.id}`);
+  };
 
   useEffect(() => {
     fetchCategories();
@@ -84,7 +93,8 @@ export default function CategoriesList() {
         {providers.map((provider) => (
           <div
             key={provider.id}
-            className="bg-gray-700 p-2 rounded-lg hover:bg-gray-600 transition-colors"
+            onClick={() => handleProviderClick(provider)}
+            className="bg-gray-700 p-2 rounded-lg hover:bg-gray-600 transition-colors cursor-pointer"
           >
             <h3 className="text-sm font-medium text-white mb-2">
               {provider.name}

@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
 
-import EventList from "../components/eventlist";
-import CategoriesList from "../components/categoriesList";
+import EventList from "@/components/eventlist";
+import CategoriesList from "@/components/categoriesList";
 
 export default function CustomerDashboard() {
   const [activeView, setActiveView] = useState<"events" | "booking">("events");
