@@ -4,6 +4,7 @@ import { PostgrestFilterBuilder } from "@supabase/postgrest-js";
 type DbResponse<T> = {
   data: T[] | null;
   error: unknown | null;
+  count?: number;
 };
 
 type QueryFunction<T extends Record<string, unknown>> = (
