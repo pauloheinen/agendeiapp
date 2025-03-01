@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   format,
   addMonths,
@@ -26,6 +27,7 @@ export function Calendar({ provider: data }: CalendarProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const { user } = useAuth();
+  const router = useRouter();
 
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
@@ -100,8 +102,22 @@ export function Calendar({ provider: data }: CalendarProps) {
   return (
     <div className="w-full">
       {success && (
-        <div className="mb-4 p-4 bg-green-500/20 border border-green-500 rounded-lg">
-          <p className="text-green-400">Agendamento realizado com sucesso!</p>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 p-6 rounded-lg max-w-md w-full mx-4">
+            <h3 className="text-xl font-medium text-white mb-4">
+              Agendamento Confirmado!
+            </h3>
+            <p className="text-gray-300 mb-6">
+              Seu agendamento foi realizado com sucesso. Você receberá uma
+              confirmação em breve.
+            </p>
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              Ir para Dashboard
+            </button>
+          </div>
         </div>
       )}
 
