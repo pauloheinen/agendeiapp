@@ -11,6 +11,8 @@ import {
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Provider } from "@/models/provider";
+import { useAuth } from "@/contexts/AuthContext";
+import { EventStatus } from "@/models/event";
 
 interface CalendarProps {
   provider: Provider | null;
@@ -20,6 +22,10 @@ export function Calendar({ provider: data }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const { user } = useAuth();
 
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
@@ -28,8 +34,83 @@ export function Calendar({ provider: data }: CalendarProps) {
   const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));
   const prevMonth = () => setCurrentDate(addMonths(currentDate, -1));
 
+  const handleConfirmAppointment = async () => {
+    if (!selectedDate || !selectedTime) {
+      setError("Por favor, selecione uma data e um horário para agendar.");
+      return;
+    }
+
+    if (!user) {
+      setError("Você precisa estar logado para fazer um agendamento.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+    setSuccess(false);
+
+    try {
+      const appointmentDate = new Date(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate(),
+        parseInt(selectedTime.split(":")[0]),
+        parseInt(selectedTime.split(":")[1])
+      );
+
+      const eventData = {
+        provider_id: data!.id,
+        user_id: user.id,
+        title: `Agendamento com ${data!.name}`,
+        date: appointmentDate.toISOString(),
+        status: EventStatus.PENDENTE,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      const response = await fetch("/api/events", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(eventData),
+      });
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(responseData.error || "Erro ao criar agendamento");
+      }
+
+      setSuccess(true);
+      setSelectedDate(null);
+      setSelectedTime(null);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Não foi possível realizar o agendamento. Por favor, tente novamente."
+      );
+      console.error("Appointment error:", err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="w-full">
+      {success && (
+        <div className="mb-4 p-4 bg-green-500/20 border border-green-500 rounded-lg">
+          <p className="text-green-400">Agendamento realizado com sucesso!</p>
+        </div>
+      )}
+
+      {error && (
+        <div className="mb-4 p-4 bg-red-500/20 border border-red-500 rounded-lg">
+          <p className="text-red-400">{error}</p>
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold">
           {format(currentDate, "MMMM yyyy", { locale: ptBR })}
@@ -127,8 +208,20 @@ export function Calendar({ provider: data }: CalendarProps) {
                   {selectedTime}
                 </span>
               </p>
-              <button className="mt-4 w-full py-3 px-4 bg-green-600 text-white font-medium rounded-lg hover:bg-green-600 transition-colors">
-                Confirmar Agendamento
+              <button
+                className={`
+                  mt-4 w-full py-3 px-4 
+                  font-medium rounded-lg transition-colors
+                  ${
+                    isSubmitting
+                      ? "bg-gray-500 cursor-not-allowed"
+                      : "bg-green-600 hover:bg-green-500 text-white"
+                  }
+                `}
+                onClick={handleConfirmAppointment}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Processando..." : "Confirmar Agendamento"}
               </button>
             </div>
           )}

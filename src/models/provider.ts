@@ -1,5 +1,5 @@
 export interface Provider extends Record<string, unknown> {
-  id: number;
+  id: string;
   name: string;
   description?: string;
   phone?: string;

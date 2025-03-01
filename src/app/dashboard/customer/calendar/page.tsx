@@ -27,7 +27,6 @@ export default function CalendarPage() {
             <h1 className="card-title mb-0">Agendar Horário</h1>
           </div>
           <p className="text-gray-400 mt-2">
-            Agendando com:{" "}
             <span className="text-white">{selectedProvider.name}</span>
           </p>
         </div>
